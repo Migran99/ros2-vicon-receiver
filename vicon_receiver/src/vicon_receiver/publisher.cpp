@@ -1,15 +1,18 @@
 #include "vicon_receiver/publisher.hpp"
 
-Publisher::Publisher(std::string topic_name, rclcpp::Node* node, bool publish_odom)
+Publisher::Publisher(std::string topic_name,  rclcpp::Node::SharedPtr node)
 {
     position_publisher_ = node->create_publisher<vicon_receiver::msg::Position>(topic_name, 10);
-    odom_publisher_ = node->create_publisher<nav_msgs::msg::Odometry>("odom/"+topic_name,10);
-    _pub_odom = publish_odom;
+    pose_publisher_ = node->create_publisher<geometry_msgs::msg::PoseStamped>(topic_name+"/pose",10);
+    twist_publisher_ = node->create_publisher<geometry_msgs::msg::TwistStamped>(topic_name+"/twist",10);
     is_ready = true;
+    _node = node;
 }
 
 void Publisher::publish(PositionStruct p)
 {
+    _node->get_parameter("pub_pose_twist",_pub_pose_twist);
+
     auto msg = std::make_shared<vicon_receiver::msg::Position>();
     msg->x_trans = p.translation[0];
     msg->y_trans = p.translation[1];
@@ -24,25 +27,24 @@ void Publisher::publish(PositionStruct p)
     msg->translation_type = p.translation_type;
     position_publisher_->publish(*msg);
 
-    if(_pub_odom)
+    if(_pub_pose_twist)
     {
-        nav_msgs::msg::Odometry odom_msg;
+        geometry_msgs::msg::PoseStamped pose_msg;
 
-        //uto timestamp = rclcpp::Node->now();
-        //odom_msg.header.stamp = timestamp;
-        odom_msg.header.frame_id = "odom";
-        //odom_msg.header.seq = msg->frame_number;
-        odom_msg.child_frame_id = msg->segment_name;
+        pose_msg.header.stamp = _node->get_clock()->now();
+        pose_msg.header.frame_id = "map";
 
-        odom_msg.pose.pose.orientation.w = msg->w;
-        odom_msg.pose.pose.orientation.x = msg->x_rot;
-        odom_msg.pose.pose.orientation.y = msg->y_rot;
-        odom_msg.pose.pose.orientation.z = msg->z_rot;
+        pose_msg.pose.orientation.w = msg->w;
+        pose_msg.pose.orientation.x = msg->x_rot;
+        pose_msg.pose.orientation.y = msg->y_rot;
+        pose_msg.pose.orientation.z = msg->z_rot;
 
-        odom_msg.pose.pose.position.x = msg->x_trans;
-        odom_msg.pose.pose.position.y = msg->x_trans;
-        odom_msg.pose.pose.position.z = msg->x_trans;
+        pose_msg.pose.position.x = msg->x_trans;
+        pose_msg.pose.position.y = msg->y_trans;
+        pose_msg.pose.position.z = msg->z_trans;
 
-        odom_publisher_->publish(odom_msg);
+        pose_publisher_->publish(pose_msg);
+
+        // TWIST Publish : TODO
     }
 }

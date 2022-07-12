@@ -28,7 +28,7 @@ find_package(Boost REQUIRED COMPONENTS thread)
 find_package(nav_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  msg/Position.msg
+  "msg/Position.msg"
 )
 
 ament_export_dependencies(rosidl_default_runtime)

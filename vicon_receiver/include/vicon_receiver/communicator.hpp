@@ -23,7 +23,7 @@ private:
     string ns_name;
     map<string, Publisher> pub_map;
     boost::mutex mutex;
-    bool _pub_odom;
+    bool _pub_pose_twist;
 
 public:
     Communicator();
