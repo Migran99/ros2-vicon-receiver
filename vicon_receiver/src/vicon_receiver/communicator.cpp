@@ -165,9 +165,11 @@ int main(int argc, char** argv)
     rclcpp::init(argc, argv);
     auto node = std::make_shared<Communicator>();
     node->connect();
-
+    rclcpp::WallRate loop_rate(100);
     while (rclcpp::ok()){
         node->get_frame();
+        rclcpp::spin_some(node);
+        loop_rate.sleep();
     }
 
     node->disconnect();
