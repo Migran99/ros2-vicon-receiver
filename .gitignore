@@ -52,3 +52,5 @@ CATKIN_IGNORE
 
 vicon_receiver/install
 vicon_receiver/log
+
+.vscode

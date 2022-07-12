@@ -1,8 +1,10 @@
 #include "vicon_receiver/publisher.hpp"
 
-Publisher::Publisher(std::string topic_name, rclcpp::Node* node)
+Publisher::Publisher(std::string topic_name, rclcpp::Node* node, bool publish_odom)
 {
     position_publisher_ = node->create_publisher<vicon_receiver::msg::Position>(topic_name, 10);
+    odom_publisher_ = node->create_publisher<nav_msgs::msg::Odometry>("odom/"+topic_name,10);
+    _pub_odom = publish_odom;
     is_ready = true;
 }
 
@@ -21,4 +23,26 @@ void Publisher::publish(PositionStruct p)
     msg->frame_number = p.frame_number;
     msg->translation_type = p.translation_type;
     position_publisher_->publish(*msg);
+
+    if(_pub_odom)
+    {
+        nav_msgs::msg::Odometry odom_msg;
+
+        //uto timestamp = rclcpp::Node->now();
+        //odom_msg.header.stamp = timestamp;
+        odom_msg.header.frame_id = "odom";
+        //odom_msg.header.seq = msg->frame_number;
+        odom_msg.child_frame_id = msg->segment_name;
+
+        odom_msg.pose.pose.orientation.w = msg->w;
+        odom_msg.pose.pose.orientation.x = msg->x_rot;
+        odom_msg.pose.pose.orientation.y = msg->y_rot;
+        odom_msg.pose.pose.orientation.z = msg->z_rot;
+
+        odom_msg.pose.pose.position.x = msg->x_trans;
+        odom_msg.pose.pose.position.y = msg->x_trans;
+        odom_msg.pose.pose.position.z = msg->x_trans;
+
+        odom_publisher_->publish(odom_msg);
+    }
 }

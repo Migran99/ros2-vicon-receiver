@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "rclcpp/rclcpp.hpp"
 #include "vicon_receiver/msg/position.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 
 // Struct used to hold segment data to transmit to the Publisher class.
 struct PositionStruct
@@ -22,11 +23,14 @@ class Publisher
 {
 private:
     rclcpp::Publisher<vicon_receiver::msg::Position>::SharedPtr position_publisher_;
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
+
+    bool _pub_odom;
 
 public:
     bool is_ready = false;
 
-    Publisher(std::string topic_name, rclcpp::Node* node);
+    Publisher(std::string topic_name, rclcpp::Node* node, bool publish_odom);
 
     // Publishes the given position in the ROS2 topic whose name is indicated in
     // the constructor.

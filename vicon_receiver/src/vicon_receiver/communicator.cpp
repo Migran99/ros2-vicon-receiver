@@ -8,9 +8,11 @@ Communicator::Communicator() : Node("vicon")
     this->declare_parameter<std::string>("hostname", "127.0.0.1");
     this->declare_parameter<int>("buffer_size", 200);
     this->declare_parameter<std::string>("namespace", "vicon");
+    this->declare_parameter<bool>("pub_odom", true);
     this->get_parameter("hostname", hostname);
     this->get_parameter("buffer_size", buffer_size);
     this->get_parameter("namespace", ns_name);
+    this->get_parameter("pub_odom",_pub_odom);
 }
 
 bool Communicator::connect()
@@ -152,7 +154,7 @@ void Communicator::create_publisher_thread(const string subject_name, const stri
 
     // create publisher
     boost::mutex::scoped_lock lock(mutex);
-    pub_map.insert(std::map<std::string, Publisher>::value_type(key, Publisher(topic_name, this)));
+    pub_map.insert(std::map<std::string, Publisher>::value_type(key, Publisher(topic_name, this, _pub_odom)));
 
     // we don't need the lock anymore, since rest is protected by is_ready
     lock.unlock();
