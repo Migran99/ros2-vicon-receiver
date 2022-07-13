@@ -19,7 +19,7 @@ bool Communicator::connect()
 {
     // connect to server
     string msg = "Connecting to " + hostname + " ...";
-    cout << msg << endl;
+    RCLCPP_INFO(this->get_logger(),msg.c_str());
     int counter = 0;
     while (!vicon_client.IsConnected().Connected)
     {
@@ -28,12 +28,12 @@ bool Communicator::connect()
         {
             counter++;
             msg = "Connect failed, reconnecting (" + std::to_string(counter) + ")...";
-            cout << msg << endl;
+            RCLCPP_WARN(this->get_logger(),msg.c_str());
             sleep(1);
         }
     }
     msg = "Connection successfully established with " + hostname;
-    cout << msg << endl;
+    RCLCPP_INFO(this->get_logger(),msg.c_str());
 
     // perform further initialization
     vicon_client.EnableSegmentData();
@@ -47,7 +47,7 @@ bool Communicator::connect()
     vicon_client.SetBufferSize(buffer_size);
 
     msg = "Initialization complete";
-    cout << msg << endl;
+    RCLCPP_INFO(this->get_logger(),msg.c_str());
 
     return true;
 }
@@ -63,10 +63,10 @@ bool Communicator::disconnect()
     vicon_client.DisableDeviceData();
     vicon_client.DisableCentroidData();
     string msg = "Disconnecting from " + hostname + "...";
-    cout << msg << endl;
+    RCLCPP_DEBUG(this->get_logger(),msg.c_str());
     vicon_client.Disconnect();
     msg = "Successfully disconnected";
-    cout << msg << endl;
+    RCLCPP_INFO(this->get_logger(),msg.c_str());
     if (!vicon_client.IsConnected().Connected)
         return true;
     return false;
@@ -150,7 +150,7 @@ void Communicator::create_publisher_thread(const string subject_name, const stri
     std::string key = subject_name + "/" + segment_name;
 
     string msg = "Creating publisher for segment " + segment_name + " from subject " + subject_name;
-    cout << msg << endl;
+    RCLCPP_DEBUG(this->get_logger(),msg.c_str());
 
     // create publisher
     boost::mutex::scoped_lock lock(mutex);
