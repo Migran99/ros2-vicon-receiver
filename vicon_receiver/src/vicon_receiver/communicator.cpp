@@ -9,6 +9,7 @@ Communicator::Communicator() : Node("vicon")
     this->declare_parameter<int>("buffer_size", 200);
     this->declare_parameter<std::string>("namespace", "vicon");
     this->declare_parameter<bool>("pub_pose_twist", true);
+    this->declare_parameter<float>("scale", 1000.0);
     this->get_parameter("hostname", hostname);
     this->get_parameter("buffer_size", buffer_size);
     this->get_parameter("namespace", ns_name);

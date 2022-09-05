@@ -12,11 +12,12 @@ Publisher::Publisher(std::string topic_name,  rclcpp::Node::SharedPtr node)
 void Publisher::publish(PositionStruct p)
 {
     _node->get_parameter("pub_pose_twist",_pub_pose_twist);
-
+    float scale;
+    _node->get_parameter("scale",scale);
     auto msg = std::make_shared<vicon_receiver::msg::Position>();
-    msg->x_trans = p.translation[0];
-    msg->y_trans = p.translation[1];
-    msg->z_trans = p.translation[2];
+    msg->x_trans = p.translation[0]/scale;
+    msg->y_trans = p.translation[1]/scale;
+    msg->z_trans = p.translation[2]/scale;
     msg->x_rot = p.rotation[0];
     msg->y_rot = p.rotation[1];
     msg->z_rot = p.rotation[2];
