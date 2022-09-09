@@ -8,7 +8,8 @@ def generate_launch_description():
         DeclareLaunchArgument('hostname', default_value='192.168.2.221:801'),
         DeclareLaunchArgument('buffer_size', default_value='4096'),
         DeclareLaunchArgument('namespace', default_value='vicon'),
-        DeclareLaunchArgument('remap', default_value='vicon'),
+        DeclareLaunchArgument('remap_to', default_value='/gt/pose'),
+        DeclareLaunchArgument('remap_from', default_value='/cf_ai'),
         DeclareLaunchArgument('scale', default_value='1000.0'),
         Node(
             package='vicon_receiver', executable='vicon_client', output='screen',
@@ -18,4 +19,5 @@ def generate_launch_description():
             'namespace': LaunchConfiguration('namespace'),
             'scale': LaunchConfiguration('scale'),
             }],
+            remappings=[(LaunchConfiguration('remap_from'),LaunchConfiguration('remap_to'))]
         )])
